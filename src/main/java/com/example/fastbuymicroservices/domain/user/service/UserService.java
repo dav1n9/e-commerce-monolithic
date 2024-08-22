@@ -17,16 +17,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public void signup(SignupRequestDto request) {
-        String password = passwordEncoder.encode(request.getPassword());
 
         // email 중복확인
-        String email = request.getEmail();
-        Optional<User> checkEmail = userRepository.findByEmail(email);
+        Optional<User> checkEmail = userRepository.findByEmail(request.getEmail());
         if (checkEmail.isPresent()) {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
 
-        User user = new User(request, password);
+        User user = request.toEntity(passwordEncoder);
         userRepository.save(user);
     }
 }
