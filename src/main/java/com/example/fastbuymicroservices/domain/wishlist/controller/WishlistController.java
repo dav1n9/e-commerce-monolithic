@@ -29,18 +29,16 @@ public class WishlistController {
         return ResponseEntity.ok().body(wishlistService.findAll(wishlistId));
     }
 
-    @PatchMapping("/{wishlistId}/item/{itemId}")
-    public ResponseEntity<Void> updateItemCount(@PathVariable Long wishlistId,
-                                                @PathVariable Long itemId,
+    @PatchMapping("/item/{wishlistItemId}")
+    public ResponseEntity<Void> updateItemCount (@PathVariable Long wishlistItemId,
                                                 @RequestBody UpdateWishlistItemRequestDto request) {
-        wishlistService.updateItemCount(wishlistId, itemId, request);
+        wishlistService.updateItemCount(wishlistItemId, request);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{wishlistId}/item/{itemId}")
-    public ResponseEntity<Void> deleteItem(@PathVariable Long wishlistId,
-                                           @PathVariable Long itemId) {
-        wishlistService.deleteItem(wishlistId, itemId);
+    @DeleteMapping("/item/{wishlistItemId}")
+    public ResponseEntity<Void> deleteItem(@PathVariable Long wishlistItemId) {
+        wishlistService.deleteItem(wishlistItemId);
         return ResponseEntity.ok().build();
     }
 }

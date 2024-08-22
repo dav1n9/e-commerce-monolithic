@@ -43,19 +43,13 @@ public class WishlistService {
     }
 
     @Transactional
-    public void updateItemCount(Long wishlistId, Long itemId, UpdateWishlistItemRequestDto request) {
-        Wishlist wishlist = findByWishlist(wishlistId);
-        Item item = findByItem(itemId);
-
-        WishlistItem wishlistItem = findByWishlistItem(wishlist, item);
+    public void updateItemCount(Long wishlistItemId, UpdateWishlistItemRequestDto request) {
+        WishlistItem wishlistItem = findByWishlistItem(wishlistItemId);
         wishlistItem.setCount(request.getCount());
     }
 
-    public void deleteItem(Long wishlistId, Long itemId) {
-        Wishlist wishlist = findByWishlist(wishlistId);
-        Item item = findByItem(itemId);
-
-        WishlistItem wishlistItem = findByWishlistItem(wishlist, item);
+    public void deleteItem(Long wishlistItemId) {
+        WishlistItem wishlistItem = findByWishlistItem(wishlistItemId);
         wishlistItemRepository.delete(wishlistItem);
     }
 
@@ -69,8 +63,8 @@ public class WishlistService {
                 .orElseThrow(() -> new NullPointerException("Not found item " + itemId));
     }
 
-    private WishlistItem findByWishlistItem(Wishlist wishlist, Item item) {
-        return wishlistItemRepository.findByWishlistAndItem(wishlist, item)
-                .orElseThrow(() -> new NullPointerException("Not found wishlistItem"));
+    private WishlistItem findByWishlistItem(Long wishlistItemId) {
+        return wishlistItemRepository.findById(wishlistItemId)
+                .orElseThrow(() -> new NullPointerException("Not found wishlistItem " + wishlistItemId));
     }
 }
