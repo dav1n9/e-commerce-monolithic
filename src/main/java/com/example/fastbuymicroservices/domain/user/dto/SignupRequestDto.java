@@ -1,8 +1,8 @@
 package com.example.fastbuymicroservices.domain.user.dto;
 
 import com.example.fastbuymicroservices.domain.user.entity.User;
+import com.example.fastbuymicroservices.global.common.EncryptionUtil;
 import lombok.Getter;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 public class SignupRequestDto {
@@ -13,13 +13,13 @@ public class SignupRequestDto {
     private String email;
     private String password;
 
-    public User toEntity(PasswordEncoder encoder) {
+    public User toEntity(EncryptionUtil encryptionUtil, String password) throws Exception {
         return User.builder()
-                .username(encoder.encode(username))
-                .address(encoder.encode(address))
-                .phoneNumber(encoder.encode(phoneNumber))
+                .username(encryptionUtil.encrypt(username))
+                .address(encryptionUtil.encrypt(address))
+                .phoneNumber(encryptionUtil.encrypt(phoneNumber))
                 .email(email)
-                .password(encoder.encode(password))
+                .password(password)
                 .build();
     }
 }

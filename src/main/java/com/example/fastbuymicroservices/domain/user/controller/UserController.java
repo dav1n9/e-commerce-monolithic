@@ -19,7 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupRequestDto request) {
+    public ResponseEntity<Void> signup(@RequestBody SignupRequestDto request) throws Exception {
         userService.signup(request);
         return ResponseEntity.ok().build();
     }
