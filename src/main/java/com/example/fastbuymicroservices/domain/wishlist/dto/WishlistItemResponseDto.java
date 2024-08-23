@@ -8,13 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WishlistItemResponseDto {
 
-    private Long id;
+    private Long wishlistId;
+    private Long itemId;
     private String itemName;
     private Integer itemPrice;
     private Integer count;
 
     public WishlistItemResponseDto(WishlistItem wishlistItem) {
-        this.id = wishlistItem.getId();
+        this.wishlistId = wishlistItem.getId();
+        this.itemId = wishlistItem.getItem().getId();
         this.itemName = wishlistItem.getItem().getName();
         this.itemPrice = wishlistItem.getItem().getPrice();
         this.count = wishlistItem.getCount();

@@ -29,4 +29,11 @@ public class Item extends Timestamped {
         this.price = price;
         this.stockQuantity = stockQuantity;
     }
+
+    public void removeStock(int quantity) {
+        int restStock = this.stockQuantity - quantity;
+        if (restStock < 0)
+            throw new IllegalArgumentException("need more stock");
+        this.stockQuantity = restStock;
+    }
 }
