@@ -100,7 +100,7 @@ public class JwtUtil {
 
     public String getTokenFromRequest(HttpServletRequest req) {
         Cookie[] cookies = req.getCookies();
-        if(cookies != null) {
+        if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
                     try {
@@ -112,5 +112,19 @@ public class JwtUtil {
             }
         }
         return null;
+    }
+
+    public void deleteToken(HttpServletRequest req, HttpServletResponse res) {
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(AUTHORIZATION_HEADER)) {
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    res.addCookie(cookie);
+                    log.info("쿠키 삭제");
+                }
+            }
+        }
     }
 }

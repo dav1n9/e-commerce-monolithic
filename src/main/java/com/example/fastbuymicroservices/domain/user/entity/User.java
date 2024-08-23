@@ -51,4 +51,8 @@ public class User extends Timestamped {
         this.email = email;
         this.password = password;
     }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
