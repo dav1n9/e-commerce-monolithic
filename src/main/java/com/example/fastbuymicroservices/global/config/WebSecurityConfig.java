@@ -5,6 +5,7 @@ import com.example.fastbuymicroservices.global.jwt.JwtAuthorizationFilter;
 import com.example.fastbuymicroservices.global.jwt.JwtUtil;
 import com.example.fastbuymicroservices.global.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Slf4j
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -58,6 +60,13 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/v1/user/**", "/api/v1/item/**").permitAll()
                         .anyRequest().authenticated()
         );
+
+        http.logout(logout -> logout
+                .logoutUrl("/api/user/logout")
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    log.info("로그아웃 성공");
+                })
+                .deleteCookies( "Authorization"));
 
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
