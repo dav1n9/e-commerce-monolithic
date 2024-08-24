@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/wishlist")
+@RequestMapping("/api/v1/wishlists")
 public class WishlistController {
 
     private final WishlistService wishlistService;
@@ -29,14 +29,14 @@ public class WishlistController {
         return ResponseEntity.ok().body(wishlistService.findAll(wishlistId));
     }
 
-    @PatchMapping("/item/{wishlistItemId}")
+    @PatchMapping("/items/{wishlistItemId}")
     public ResponseEntity<Void> updateItemCount (@PathVariable Long wishlistItemId,
                                                 @RequestBody UpdateWishlistItemRequestDto request) {
         wishlistService.updateItemCount(wishlistItemId, request);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/item/{wishlistItemId}")
+    @DeleteMapping("/items/{wishlistItemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable Long wishlistItemId) {
         wishlistService.deleteItem(wishlistItemId);
         return ResponseEntity.ok().build();

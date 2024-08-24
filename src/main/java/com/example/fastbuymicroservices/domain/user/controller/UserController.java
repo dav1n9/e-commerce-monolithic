@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/signup")
+    @PostMapping
     public ResponseEntity<Void> signup(@RequestBody SignupRequestDto request) throws Exception {
         userService.signup(request);
         return ResponseEntity.ok().build();

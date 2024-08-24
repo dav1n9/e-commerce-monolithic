@@ -57,12 +57,12 @@ public class WebSecurityConfig {
 
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
-                        .requestMatchers("/api/v1/user/**", "/api/v1/item/**").permitAll()
+                        .requestMatchers("/api/v1/users/**", "/api/v1/items/**").permitAll()
                         .anyRequest().authenticated()
         );
 
         http.logout(logout -> logout
-                .logoutUrl("/api/user/logout")
+                .logoutUrl("/api/logout")
                 .logoutSuccessHandler((request, response, authentication) -> {
                     log.info("로그아웃 성공");
                 })
