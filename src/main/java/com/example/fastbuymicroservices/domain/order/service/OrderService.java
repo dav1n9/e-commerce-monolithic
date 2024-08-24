@@ -14,6 +14,7 @@ import com.example.fastbuymicroservices.domain.user.entity.User;
 import com.example.fastbuymicroservices.global.common.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,8 +54,21 @@ public class OrderService {
         return orders.stream().map(OrderResponseDto::new).toList();
     }
 
+    @Transactional
     public OrderResponseDto cancelOrder(Long orderId) {
-        return new OrderResponseDto();
+        Order order = findOrderById(orderId);
+        if (order.getStatus() != OrderStatus.ORDER_COMPLETED && order.getStatus() != OrderStatus.SHIPPING ) {
+            throw new IllegalArgumentException("주문 취소가 불가능 합니다.");
+        }
+
+        // 상품 재고 복구
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Item item = orderItem.getItem();
+            item.addStock(orderItem.getCount());
+        }
+        order.setStatus(OrderStatus.CANCELED);  // 취소완료 상태로 변경
+
+        return new OrderResponseDto(order);
     }
 
     public OrderResponseDto returnOrder(Long orderId) {
@@ -64,5 +78,10 @@ public class OrderService {
     private Item findItemById(Long itemId) {
         return itemRepository.findById(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("Not found item " + itemId));
+    }
+
+    private Order findOrderById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found order " + orderId));
     }
 }
