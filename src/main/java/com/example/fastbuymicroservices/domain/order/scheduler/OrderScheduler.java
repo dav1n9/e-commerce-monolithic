@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -18,25 +19,26 @@ public class OrderScheduler {
 
     private final OrderRepository orderRepository;
 
-    @Scheduled(cron = "0 0 16 * * ?") // 매일 오후 4시 실행
+    @Scheduled(cron = "0 0 2 * * ?")
     @Transactional
     public void updateOrderStatus() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime threeDaysAgo4PM = now.minusDays(3).with(LocalTime.of(16, 0)); // 3일 전 오후 4시
-        LocalDateTime twoDaysAgo4PM = now.minusDays(2).with(LocalTime.of(16, 0)); // 2일 전 오후 4시
-        LocalDateTime yesterday4PM = now.minusDays(1).with(LocalTime.of(16, 0)); // 어제 오후 4시
+        LocalDate now = LocalDate.now();
+        LocalDateTime startOfYesterday = now.minusDays(1).atStartOfDay();
+        LocalDateTime endOfYesterday = now.minusDays(1).atTime(LocalTime.MAX);
+        LocalDateTime startOfTwoDaysAgo = now.minusDays(2).atStartOfDay();
+        LocalDateTime endOfTwoDaysAgo = now.minusDays(2).atTime(LocalTime.MAX);
 
-        // 2일 전 오후 4시부터 어제 오후 4시까지 주문된 모든 주문 상태 'SHIPPING(배송중)'으로 업데이트
+        // 어제 자정부터 어제 23시 59분 59초까지 주문된 모든 주문 상태 'SHIPPING(배송중)'으로 업데이트
         List<Order> ordersToShip = orderRepository.findByStatusAndCreatedAtBetween(
-                OrderStatus.ORDER_COMPLETED, twoDaysAgo4PM, yesterday4PM);
+                OrderStatus.ORDER_COMPLETED, startOfYesterday, endOfYesterday);
         for (Order order : ordersToShip) {
             order.setStatus(OrderStatus.SHIPPING);
         }
         orderRepository.saveAll(ordersToShip);
 
-        // 3일 전 오후 4시부터 2일 전 오후 4시까지 주문된 모든 주문 상태 'DELIVERED(배송완료)'로 업데이트
+        // 2일 전 자정부터 2일 전 23시 59분 59초까지 주문된 모든 주문 상태 'DELIVERED(배송완료)'로 업데이트
         List<Order> ordersToComplete = orderRepository.findByStatusAndCreatedAtBetween(
-                OrderStatus.SHIPPING, threeDaysAgo4PM, twoDaysAgo4PM);
+                OrderStatus.SHIPPING, startOfTwoDaysAgo, endOfTwoDaysAgo);
         for (Order order : ordersToComplete) {
             order.setStatus(OrderStatus.DELIVERED);
         }
