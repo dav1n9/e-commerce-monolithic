@@ -11,7 +11,6 @@ import com.example.fastbuymicroservices.domain.order.entity.OrderStatus;
 import com.example.fastbuymicroservices.domain.order.repository.OrderItemRepository;
 import com.example.fastbuymicroservices.domain.order.repository.OrderRepository;
 import com.example.fastbuymicroservices.domain.user.entity.User;
-import com.example.fastbuymicroservices.global.common.EncryptionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +26,12 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
-    private final EncryptionUtil encryptionUtil;
 
-    public OrderResponseDto save(User user, CreateOrderRequestDto request) throws Exception {
+    public OrderResponseDto save(User user, CreateOrderRequestDto request) {
         // order 생성
         Order order = orderRepository.save(Order.builder()
                 .user(user)
-                .address(encryptionUtil.decrypt(user.getAddress()))
+                .address(user.getAddress())
                 .status(OrderStatus.ORDER_COMPLETED)
                 .build());
 

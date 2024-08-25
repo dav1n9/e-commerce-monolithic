@@ -1,7 +1,6 @@
 package com.example.fastbuymicroservices.domain.user.dto;
 
 import com.example.fastbuymicroservices.domain.user.entity.User;
-import com.example.fastbuymicroservices.global.common.EncryptionUtil;
 import lombok.Getter;
 
 @Getter
@@ -13,11 +12,11 @@ public class SignupRequestDto {
     private String email;
     private String password;
 
-    public User toEntity(EncryptionUtil encryptionUtil, String password) throws Exception {
+    public User toEntity(String password) throws Exception {
         return User.builder()
-                .username(encryptionUtil.encrypt(username))
-                .address(encryptionUtil.encrypt(address))
-                .phoneNumber(encryptionUtil.encrypt(phoneNumber))
+                .username(username)
+                .address(address)
+                .phoneNumber(phoneNumber)
                 .email(email)
                 .password(password)
                 .build();

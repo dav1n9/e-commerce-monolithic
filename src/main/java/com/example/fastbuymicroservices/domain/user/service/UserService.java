@@ -6,7 +6,6 @@ import com.example.fastbuymicroservices.domain.user.entity.User;
 import com.example.fastbuymicroservices.domain.user.repository.UserRepository;
 import com.example.fastbuymicroservices.domain.wishlist.entity.Wishlist;
 import com.example.fastbuymicroservices.domain.wishlist.repository.WishlistRepository;
-import com.example.fastbuymicroservices.global.common.EncryptionUtil;
 import com.example.fastbuymicroservices.global.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,7 +24,6 @@ public class UserService {
     private final WishlistRepository wishlistRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final EncryptionUtil encryptionUtil;
 
     @Transactional
     public void signup(SignupRequestDto request) throws Exception {
@@ -35,7 +33,7 @@ public class UserService {
             throw new IllegalArgumentException("중복된 Email 입니다.");
         }
 
-        User user = request.toEntity(encryptionUtil, passwordEncoder.encode(request.getPassword()));
+        User user = request.toEntity(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
 
         Wishlist wishlist = Wishlist.builder()

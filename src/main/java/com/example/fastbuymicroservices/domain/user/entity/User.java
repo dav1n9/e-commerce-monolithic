@@ -2,6 +2,7 @@ package com.example.fastbuymicroservices.domain.user.entity;
 
 import com.example.fastbuymicroservices.domain.order.entity.Order;
 import com.example.fastbuymicroservices.domain.wishlist.entity.Wishlist;
+import com.example.fastbuymicroservices.global.common.EncryptDecryptConverter;
 import com.example.fastbuymicroservices.global.common.Timestamped;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -22,12 +23,15 @@ public class User extends Timestamped {
     @Column(name = "user_id")
     private Long id;
 
+    @Convert(converter = EncryptDecryptConverter.class)
     @Column(nullable = false)
     private String username;
 
+    @Convert(converter = EncryptDecryptConverter.class)
     @Column(nullable = false)
     private String address;
 
+    @Convert(converter = EncryptDecryptConverter.class)
     @Column(nullable = false)
     private String phoneNumber;
 
