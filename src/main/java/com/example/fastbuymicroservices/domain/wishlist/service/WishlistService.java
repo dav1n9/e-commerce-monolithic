@@ -9,6 +9,8 @@ import com.example.fastbuymicroservices.domain.wishlist.entity.Wishlist;
 import com.example.fastbuymicroservices.domain.wishlist.entity.WishlistItem;
 import com.example.fastbuymicroservices.domain.wishlist.repository.WishlistItemRepository;
 import com.example.fastbuymicroservices.domain.wishlist.repository.WishlistRepository;
+import com.example.fastbuymicroservices.global.exception.BusinessException;
+import com.example.fastbuymicroservices.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,16 +57,16 @@ public class WishlistService {
 
     private Wishlist findByWishlist(Long wishlistId) {
         return wishlistRepository.findById(wishlistId)
-                .orElseThrow(() -> new NullPointerException("Not found wishlist " + wishlistId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.WISHLIST_NOT_FOUND));
     }
 
     private Item findByItem(Long itemId) {
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new NullPointerException("Not found item " + itemId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ITEM_NOT_FOUND));
     }
 
     private WishlistItem findByWishlistItem(Long wishlistItemId) {
         return wishlistItemRepository.findById(wishlistItemId)
-                .orElseThrow(() -> new NullPointerException("Not found wishlistItem " + wishlistItemId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.WISHLIST_ITEM_NOT_FOUND));
     }
 }

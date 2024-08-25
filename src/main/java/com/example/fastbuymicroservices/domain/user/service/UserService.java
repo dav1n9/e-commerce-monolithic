@@ -6,6 +6,8 @@ import com.example.fastbuymicroservices.domain.user.entity.User;
 import com.example.fastbuymicroservices.domain.user.repository.UserRepository;
 import com.example.fastbuymicroservices.domain.wishlist.entity.Wishlist;
 import com.example.fastbuymicroservices.domain.wishlist.repository.WishlistRepository;
+import com.example.fastbuymicroservices.global.exception.BusinessException;
+import com.example.fastbuymicroservices.global.exception.ErrorCode;
 import com.example.fastbuymicroservices.global.jwt.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,7 +32,7 @@ public class UserService {
 
         Optional<User> checkEmail = userRepository.findByEmail(request.getEmail());
         if (checkEmail.isPresent()) {
-            throw new IllegalArgumentException("중복된 Email 입니다.");
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
 
         User user = request.toEntity(passwordEncoder.encode(request.getPassword()));
@@ -48,10 +50,10 @@ public class UserService {
                                Long userId, UpdatePasswordRequestDto request) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Not found user " + userId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword()))
-            throw new IllegalArgumentException("Not correct password");
+            throw new BusinessException(ErrorCode.PASSWORD_MISMATCH);
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 

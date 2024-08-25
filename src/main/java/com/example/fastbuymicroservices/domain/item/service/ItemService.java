@@ -4,6 +4,8 @@ import com.example.fastbuymicroservices.domain.item.dto.CreateItemRequestDto;
 import com.example.fastbuymicroservices.domain.item.dto.ItemResponseDto;
 import com.example.fastbuymicroservices.domain.item.entity.Item;
 import com.example.fastbuymicroservices.domain.item.repository.ItemRepository;
+import com.example.fastbuymicroservices.global.exception.BusinessException;
+import com.example.fastbuymicroservices.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +28,7 @@ public class ItemService {
 
     public ItemResponseDto findById(Long itemId) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new NullPointerException("Not found item " + itemId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ITEM_NOT_FOUND));
         return new ItemResponseDto(item);
     }
 }
