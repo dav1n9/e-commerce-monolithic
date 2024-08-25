@@ -30,12 +30,14 @@ public class OrderController {
     }
 
     @PatchMapping("/{orderId}/cancel")
-    public ResponseEntity<OrderResponseDto> cancelOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok().body(orderService.cancelOrder(orderId));
+    public ResponseEntity<OrderResponseDto> cancelOrder(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @PathVariable Long orderId) {
+        return ResponseEntity.ok().body(orderService.cancelOrder(userDetails.getUser(), orderId));
     }
 
     @PatchMapping("/{orderId}/return")
-    public ResponseEntity<OrderResponseDto> returnOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok().body(orderService.returnOrder(orderId));
+    public ResponseEntity<OrderResponseDto> returnOrder(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                        @PathVariable Long orderId) {
+        return ResponseEntity.ok().body(orderService.returnOrder(userDetails.getUser(), orderId));
     }
 }

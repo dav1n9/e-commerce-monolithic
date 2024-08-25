@@ -11,6 +11,8 @@ import com.example.fastbuymicroservices.domain.order.entity.OrderStatus;
 import com.example.fastbuymicroservices.domain.order.repository.OrderItemRepository;
 import com.example.fastbuymicroservices.domain.order.repository.OrderRepository;
 import com.example.fastbuymicroservices.domain.user.entity.User;
+import com.example.fastbuymicroservices.global.exception.BusinessException;
+import com.example.fastbuymicroservices.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,46 +56,52 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDto cancelOrder(Long orderId) {
+    public OrderResponseDto cancelOrder(User user, Long orderId) {
         Order order = findOrderById(orderId);
+
+        if (order.getUser() != user)
+            throw new BusinessException(ErrorCode.NOT_USER_ORDER);
+
         if (order.getStatus() != OrderStatus.ORDER_COMPLETED && order.getStatus() != OrderStatus.SHIPPING) {
-            throw new IllegalArgumentException("주문 취소가 불가능 합니다.");
+            throw new BusinessException(ErrorCode.ORDER_CANCELLATION_NOT_ALLOWED);
         }
 
-        // 상품 재고 복구
         for (OrderItem orderItem : order.getOrderItems()) {
             Item item = orderItem.getItem();
             item.addStock(orderItem.getCount());
         }
-        order.setStatus(OrderStatus.CANCELED);  // 취소완료 상태로 변경
 
+        order.setStatus(OrderStatus.CANCELED);
         return new OrderResponseDto(order);
     }
 
     @Transactional
-    public OrderResponseDto returnOrder(Long orderId) {
+    public OrderResponseDto returnOrder(User user, Long orderId) {
         Order order = findOrderById(orderId);
+
+        if (order.getUser() != user)
+            throw new BusinessException(ErrorCode.NOT_USER_ORDER);
+
         if (order.getStatus() != OrderStatus.DELIVERED) {
-            throw new IllegalArgumentException("배송 완료된 주문이 아닙니다.");
+            throw new BusinessException(ErrorCode.ORDER_NOT_DELIVERED);
         }
 
         LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
         if (order.getUpdatedAt().isBefore(oneDayAgo)) {
-            throw new IllegalArgumentException("반품 신청 기한이 아닙니다.");
+            throw new BusinessException(ErrorCode.RETURN_PERIOD_EXPIRED);
         }
 
         order.setStatus(OrderStatus.RETURN_REQUESTED);
-
         return new OrderResponseDto(order);
     }
 
     private Item findItemById(Long itemId) {
         return itemRepository.findById(itemId)
-                .orElseThrow(() -> new IllegalArgumentException("Not found item " + itemId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ITEM_NOT_FOUND));
     }
 
     private Order findOrderById(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Not found order " + orderId));
+                .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
     }
 }
