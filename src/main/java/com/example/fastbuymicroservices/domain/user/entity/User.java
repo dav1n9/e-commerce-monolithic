@@ -35,6 +35,7 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String phoneNumber;
 
+    @Convert(converter = EncryptDecryptConverter.class)
     @Column(nullable = false, unique = true)
     private String email;
 
