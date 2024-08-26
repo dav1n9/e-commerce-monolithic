@@ -15,8 +15,9 @@ public enum ErrorCode {
     ORDER_NOT_DELIVERED(400, "배송 완료된 주문이 아닙니다."),
     RETURN_PERIOD_EXPIRED(400, "반품 신청 기한이 아닙니다."),
     ORDER_CANCELLATION_NOT_ALLOWED(400, "주문 취소가 불가능 합니다."),
-    DUPLICATE_EMAIL(400, "중복된 이메일 입니다."),
-    NOT_USER_ORDER(403, "해당 유저의 주문이 아닙니다.");
+    DUPLICATE_EMAIL(400, "이미 가입된 이메일 입니다."),
+    NOT_USER_ORDER(403, "해당 유저의 주문이 아닙니다."),
+    MAIL_SEND_FAILURE (500, "메일 발송에 실패했습니다.");
 
     private final int status;
     private final String message;
