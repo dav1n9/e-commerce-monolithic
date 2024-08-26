@@ -2,6 +2,7 @@ package com.example.fastbuymicroservices.domain.user.controller;
 
 import com.example.fastbuymicroservices.domain.user.dto.MailValidateRequestDto;
 import com.example.fastbuymicroservices.domain.user.dto.MailValidateResponseDto;
+import com.example.fastbuymicroservices.domain.user.dto.VerifyCodeRequestDto;
 import com.example.fastbuymicroservices.domain.user.service.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,5 +27,10 @@ public class MailController {
         return ResponseEntity.ok().body(new MailValidateResponseDto(code, "이메일 인증 메일이 전송되었습니다."));
     }
 
+    @PostMapping("/verify-code")
+    public ResponseEntity<Void> verifyCode(@RequestBody VerifyCodeRequestDto request) {
+        mailService.verifyCode(request);
+        return ResponseEntity.ok().build();
+    }
 
 }

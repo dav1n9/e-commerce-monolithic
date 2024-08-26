@@ -1,13 +1,14 @@
 package com.example.fastbuymicroservices.domain.user.service;
 
+import com.example.fastbuymicroservices.domain.user.dto.VerifyCodeRequestDto;
 import com.example.fastbuymicroservices.domain.user.repository.UserRepository;
+import com.example.fastbuymicroservices.global.common.RedisUtil;
 import com.example.fastbuymicroservices.global.exception.BusinessException;
 import com.example.fastbuymicroservices.global.exception.ErrorCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -19,22 +20,32 @@ public class MailService {
 
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
+    private final RedisUtil redisUtil;
 
     @Value("${spring.mail.username}")
     private String senderEmail;
+
+    public void verifyCode(VerifyCodeRequestDto request) {
+        if (redisUtil.getData(request.getCode()) == null ||
+                !redisUtil.getData(request.getCode()).equals(request.getEmail())) {
+            throw new BusinessException(ErrorCode.INVALID_VERIFICATION_CODE);
+        }
+    }
 
     public String sendSimpleMessage(String sendEmail) throws MessagingException {
         String number = createNumber(); // 랜덤 인증번호 생성
 
         checkDuplicatedEmail(sendEmail);
 
-        MimeMessage message = createMail(sendEmail, number); // 메일 생성
+        MimeMessage message = createMail(sendEmail, number);
         try {
-            javaMailSender.send(message); // 메일 발송
-        } catch (MailException e) {
-            throw new BusinessException(ErrorCode.NOT_USER_ORDER);
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.MAIL_SEND_FAILURE);
         }
-        return number; // 생성된 인증번호 반환
+
+        redisUtil.setDataExpire(number, sendEmail, 60 * 5L); // 5분
+        return number;
     }
 
     public MimeMessage createMail(String mail, String number) throws MessagingException {
@@ -69,10 +80,9 @@ public class MailService {
         return key.toString();
     }
 
-    private void checkDuplicatedEmail(String email){
+    private void checkDuplicatedEmail(String email) {
         userRepository.findByEmail(email).ifPresent(m -> {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         });
     }
-
 }
