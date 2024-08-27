@@ -29,6 +29,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
 
+    @Transactional
     public OrderResponseDto save(User user, CreateOrderRequestDto request) {
         // order 생성
         Order order = orderRepository.save(Order.builder()
