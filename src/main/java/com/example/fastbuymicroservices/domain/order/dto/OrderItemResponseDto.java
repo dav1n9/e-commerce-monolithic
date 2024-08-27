@@ -11,11 +11,13 @@ public class OrderItemResponseDto {
     private String itemName;
     private Integer orderPrice;
     private Integer count;
+    private Integer totalPrice;
 
     public OrderItemResponseDto(OrderItem orderItem) {
         this.itemId = orderItem.getItem().getId();
         this.itemName = orderItem.getItem().getName();
         this.orderPrice = orderItem.getOrderPrice();
         this.count = orderItem.getCount();
+        this.totalPrice = orderItem.getTotalPrice();
     }
 }

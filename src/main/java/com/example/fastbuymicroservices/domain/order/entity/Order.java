@@ -48,4 +48,12 @@ public class Order extends Timestamped {
     public void setStatus(OrderStatus status) {
         this.status = status;
     }
+
+    public Integer getTotalPrice() {
+        Integer totalPrice = 0;
+        for (OrderItem orderItem : orderItems) {
+            totalPrice += orderItem.getTotalPrice();
+        }
+        return totalPrice;
+    }
 }

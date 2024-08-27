@@ -15,12 +15,14 @@ public class OrderResponseDto {
     private Long id;
     private String address;
     private OrderStatus status;
+    private Integer orderTotalPrice;
     private List<OrderItemResponseDto> orderItems = new ArrayList<>();
 
     public OrderResponseDto(Order order) {
         this.id = order.getId();
         this.address = order.getAddress();
         this.status = order.getStatus();
+        orderTotalPrice = order.getTotalPrice();
         this.orderItems = order.getOrderItems().stream().map(OrderItemResponseDto::new).toList();
     }
 }

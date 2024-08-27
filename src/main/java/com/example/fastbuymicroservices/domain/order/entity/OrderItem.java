@@ -37,4 +37,8 @@ public class OrderItem extends Timestamped {
         this.order = order;
         this.item = item;
     }
+
+    public Integer getTotalPrice() {
+        return getOrderPrice() * getCount();
+    }
 }
