@@ -2,9 +2,8 @@ package com.example.fastbuymicroservices.domain.wishlist.service;
 
 import com.example.fastbuymicroservices.domain.item.entity.Item;
 import com.example.fastbuymicroservices.domain.item.repository.ItemRepository;
-import com.example.fastbuymicroservices.domain.wishlist.dto.AddWishlistItemRequestDto;
-import com.example.fastbuymicroservices.domain.wishlist.dto.UpdateWishlistItemRequestDto;
-import com.example.fastbuymicroservices.domain.wishlist.dto.WishlistItemResponseDto;
+import com.example.fastbuymicroservices.domain.user.entity.User;
+import com.example.fastbuymicroservices.domain.wishlist.dto.*;
 import com.example.fastbuymicroservices.domain.wishlist.entity.Wishlist;
 import com.example.fastbuymicroservices.domain.wishlist.entity.WishlistItem;
 import com.example.fastbuymicroservices.domain.wishlist.repository.WishlistItemRepository;
@@ -25,7 +24,7 @@ public class WishlistService {
     private final ItemRepository itemRepository;
     private final WishlistItemRepository wishlistItemRepository;
 
-    public void addWishlistItem(Long wishlistId, AddWishlistItemRequestDto request) {
+    public WishlistItemResponseDto addWishlistItem(Long wishlistId, AddWishlistItemRequestDto request) {
         Wishlist wishlist = findByWishlist(wishlistId);
         Item item = findByItem(request.getItemId());
         WishlistItem wishlistItem = WishlistItem.builder()
@@ -35,19 +34,32 @@ public class WishlistService {
                 .build();
 
         wishlistItemRepository.save(wishlistItem);
+        return new WishlistItemResponseDto(wishlistItem);
     }
 
-    public List<WishlistItemResponseDto> findAll(Long wishlistId) {
-        Wishlist wishlist = findByWishlist(wishlistId);
-        List<WishlistItem> wishlistItems = wishlistItemRepository.findByWishlist(wishlist);
+    public WishlistResponseDto createWishlist(User user, CreateWishlistRequestDto request) {
+        Wishlist wishlist = Wishlist.builder()
+                .user(user)
+                .name(request.getName())
+                .build();
+        wishlistRepository.save(wishlist);
+        return new WishlistResponseDto(wishlist);
+    }
 
-        return wishlistItems.stream().map(WishlistItemResponseDto::new).toList();
+    public WishlistResponseDto findWishlist(Long wishlistId) {
+        Wishlist wishlist = findByWishlist(wishlistId);
+        return new WishlistResponseDto(wishlist);
+    }
+
+    public List<WishlistResponseDto> findWishlist(User user) {
+        return wishlistRepository.findByUser(user).stream().map(WishlistResponseDto::new).toList();
     }
 
     @Transactional
-    public void updateItemCount(Long wishlistItemId, UpdateWishlistItemRequestDto request) {
+    public WishlistItemResponseDto updateItemCount(Long wishlistItemId, UpdateWishlistItemRequestDto request) {
         WishlistItem wishlistItem = findByWishlistItem(wishlistItemId);
         wishlistItem.setCount(request.getCount());
+        return new WishlistItemResponseDto(wishlistItem);
     }
 
     public void deleteItem(Long wishlistItemId) {
